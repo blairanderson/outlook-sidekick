@@ -7,7 +7,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://alansynn.com/michael/";
+const urlProd = "https://blairanderson.github.io/outlook-sidekick/";
 
 const addinName = "Sidekick";
 const addinDevName = "Sidekick [Local]";
