@@ -13,14 +13,14 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Sidekick"/>
   <Description DefaultValue="Sidekick — AI email assistant powered by OpenRouter. Summarize, reply, and create calendar events directly in Outlook."/>
-  <IconUrl DefaultValue="https://alansynn.com/michael/assets/icon-black.png"/>
-  <HighResolutionIconUrl DefaultValue="https://alansynn.com/michael/assets/michael-black.png"/>
+  <IconUrl DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/icon-black.png"/>
+  <HighResolutionIconUrl DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/michael-black.png"/>
   <SupportUrl DefaultValue="https://github.com/AlanSynn/Michael"/>
 
   <!-- Allowed domains -->
   <AppDomains>
     <AppDomain>https://localhost:3000</AppDomain>
-    <AppDomain>https://alansynn.com</AppDomain>
+    <AppDomain>https://blairanderson.github.io</AppDomain>
     <AppDomain>https://openrouter.ai</AppDomain>
   </AppDomains>
 
@@ -39,7 +39,7 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://alansynn.com/michael/taskpane.html"/>
+        <SourceLocation DefaultValue="https://blairanderson.github.io/outlook-sidekick/taskpane.html"/>
         <RequestedHeight>450</RequestedHeight>
       </DesktopSettings>
     </Form>
@@ -93,13 +93,13 @@
 
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://alansynn.com/michael/assets/icon-16.png"/>
-        <bt:Image id="Icon.24x24" DefaultValue="https://alansynn.com/michael/assets/icon-24.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://alansynn.com/michael/assets/icon-32.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://alansynn.com/michael/assets/icon-80.png"/>
+        <bt:Image id="Icon.16x16" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/icon-16.png"/>
+        <bt:Image id="Icon.24x24" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/icon-24.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/icon-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://alansynn.com/michael/taskpane.html"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://blairanderson.github.io/outlook-sidekick/taskpane.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GroupLabel" DefaultValue="Sidekick"/>
@@ -149,18 +149,18 @@
       </Hosts>
       <Resources>
         <bt:Images>
-          <bt:Image id="Icon" DefaultValue="https://alansynn.com/michael/assets/icon.png"/>
-          <bt:Image id="Icon.16x16" DefaultValue="https://alansynn.com/michael/assets/icon-16.png"/>
-          <bt:Image id="Icon.24x24" DefaultValue="https://alansynn.com/michael/assets/icon-24.png"/>
-          <bt:Image id="Icon.32x32" DefaultValue="https://alansynn.com/michael/assets/icon-32.png"/>
-          <bt:Image id="Icon.80x80" DefaultValue="https://alansynn.com/michael/assets/icon-80.png"/>
-          <bt:Image id="logo-black" DefaultValue="https://alansynn.com/michael/assets/michael-black.png"/>
-          <bt:Image id="logo-white" DefaultValue="https://alansynn.com/michael/assets/michael-white.png"/>
-          <bt:Image id="banner-black" DefaultValue="https://alansynn.com/michael/assets/meet-michael-black.png"/>
-          <bt:Image id="banner-white" DefaultValue="https://alansynn.com/michael/assets/meet-michael-white.png"/>
+          <bt:Image id="Icon" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/icon.png"/>
+          <bt:Image id="Icon.16x16" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/icon-16.png"/>
+          <bt:Image id="Icon.24x24" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/icon-24.png"/>
+          <bt:Image id="Icon.32x32" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/icon-32.png"/>
+          <bt:Image id="Icon.80x80" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/icon-80.png"/>
+          <bt:Image id="logo-black" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/michael-black.png"/>
+          <bt:Image id="logo-white" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/michael-white.png"/>
+          <bt:Image id="banner-black" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/meet-michael-black.png"/>
+          <bt:Image id="banner-white" DefaultValue="https://blairanderson.github.io/outlook-sidekick/assets/meet-michael-white.png"/>
         </bt:Images>
         <bt:Urls>
-          <bt:Url id="Taskpane.Url" DefaultValue="https://alansynn.com/michael/taskpane.html"/>
+          <bt:Url id="Taskpane.Url" DefaultValue="https://blairanderson.github.io/outlook-sidekick/taskpane.html"/>
         </bt:Urls>
         <bt:ShortStrings>
           <bt:String id="GroupLabel" DefaultValue="Sidekick"/>
