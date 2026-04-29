@@ -7,7 +7,8 @@
   xsi:type="MailApp">
 
   <!-- Basic settings -->
-  <Id>9549e1d3-1ddc-4383-8b3a-d71952f8453a</Id>
+  <!-- ID: uuid5(dns, "blairanderson-outlook-sidekick") -->
+  <Id>983676cc-3b90-5148-843a-278b0bdcc5e0</Id>
   <Version>1.1.0.0</Version>
   <ProviderName>Sidekick</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
