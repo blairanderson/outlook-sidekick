@@ -1,13 +1,11 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. -->
-<!-- This file shows how to design a first-run page that provides a welcome screen to the user about the features of the add-in. -->
-
 <!doctype html>
 <html>
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Read it for me, Michael</title>
+    <title>Sidekick</title>
 
     <!-- Office JavaScript API -->
     <script
@@ -24,7 +22,7 @@
     <!-- Template styles -->
     <link href="taskpane.css" rel="stylesheet" type="text/css" />
 
-    <!-- Taskpane-local styles for model discovery UX -->
+    <!-- Taskpane-local styles -->
     <style>
       .settings-help-text {
         display: block;
@@ -73,6 +71,60 @@
       body[data-theme="dark"] .model-catalog-status[data-tone="warning"] {
         color: #f1707b;
       }
+
+      /* Copy as dropdown */
+      .copy-as-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+
+      .copy-as-dropdown {
+        display: none;
+        position: absolute;
+        bottom: calc(100% + 4px);
+        left: 0;
+        background: var(--surface, #ffffff);
+        border: 1px solid var(--border, #edebe9);
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 100;
+        min-width: 130px;
+        overflow: hidden;
+      }
+
+      .copy-as-dropdown.open {
+        display: block;
+      }
+
+      .copy-as-dropdown button {
+        display: block;
+        width: 100%;
+        padding: 8px 14px;
+        text-align: left;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--text-primary, #323130);
+        white-space: nowrap;
+      }
+
+      .copy-as-dropdown button:hover {
+        background: var(--hover, #f3f2f1);
+      }
+
+      body[data-theme="dark"] .copy-as-dropdown {
+        background: #2d2d2d;
+        border-color: #484644;
+      }
+
+      body[data-theme="dark"] .copy-as-dropdown button {
+        color: #f3f2f1;
+      }
+
+      body[data-theme="dark"] .copy-as-dropdown button:hover {
+        background: #3d3d3d;
+      }
     </style>
   </head>
 
@@ -95,7 +147,7 @@
   >
     <header class="ms-welcome__header">
       <div class="header-brand">
-        <span class="brand-name-text">Michael</span>
+        <span class="brand-name-text">Sidekick</span>
         <div id="dev-badge" class="dev-badge" style="display: none">DEV</div>
       </div>
 
@@ -103,14 +155,6 @@
         <button id="summarize" class="action-button" title="Summarize">
           <i class="ms-Icon ms-Icon--EditNote" aria-hidden="true"></i>
           <span>Summarize</span>
-        </button>
-        <button id="translate" class="action-button" title="Translate">
-          <i class="ms-Icon ms-Icon--Translate" aria-hidden="true"></i>
-          <span>Translate</span>
-        </button>
-        <button id="translate-summarize" class="action-button" title="Translate & Summarize">
-          <i class="ms-Icon ms-Icon--ReadingMode" aria-hidden="true"></i>
-          <span>T&S</span>
         </button>
         <button id="calendar-event" class="action-button" title="Add to Calendar" disabled>
           <i class="ms-Icon ms-Icon--Calendar" aria-hidden="true"></i>
@@ -128,40 +172,19 @@
       class="ms-welcome__main"
       style="text-align: center; padding-top: 20px"
     >
-      <!-- Correct default src path -->
-      <img
-        id="sideload-logo"
-        src="../../assets/meet-michael-black.png"
-        alt="Meet Michael Logo"
-        style="max-width: 150px; margin-bottom: 15px"
-      />
       <p class="ms-font-l">Please sideload your add-in.</p>
     </section>
+
     <main id="app-body" class="ms-welcome__main" style="display: none">
-      <!-- Landing screen - shown when no content is displayed -->
+      <!-- Landing screen -->
       <section id="landing-screen">
         <div class="landing-content">
-          <!-- Correct default src path -->
-          <img
-            id="landing-logo-main"
-            src="../../assets/meet-michael-black.png"
-            alt="Meet Michael Logo"
-            class="landing-logo"
-          />
-          <h2 class="landing-title">Read it for me, Michael</h2>
+          <h2 class="landing-title">Sidekick</h2>
           <p class="landing-description">Select an email and use the buttons above to:</p>
           <div class="landing-features">
             <div class="feature-item">
               <i class="ms-Icon ms-Icon--EditNote" aria-hidden="true"></i>
               <span>Summarize the email</span>
-            </div>
-            <div class="feature-item">
-              <i class="ms-Icon ms-Icon--Translate" aria-hidden="true"></i>
-              <span>Translate to your language</span>
-            </div>
-            <div class="feature-item">
-              <i class="ms-Icon ms-Icon--ReadingMode" aria-hidden="true"></i>
-              <span>Translate & Summarize</span>
             </div>
             <div class="feature-item">
               <i class="ms-Icon ms-Icon--Calendar" aria-hidden="true"></i>
@@ -189,9 +212,17 @@
             <div id="result-content" class="markdown-body"></div>
           </div>
           <div class="result-actions">
-            <button id="copy-result" class="ms-Button ms-Button--primary">
-              <span class="ms-Button-label">Copy to Clipboard</span>
-            </button>
+            <!-- Copy as dropdown -->
+            <div class="copy-as-wrapper">
+              <button id="copy-as-toggle" class="ms-Button ms-Button--primary">
+                <span class="ms-Button-label">Copy as ▾</span>
+              </button>
+              <div id="copy-as-dropdown" class="copy-as-dropdown">
+                <button id="copy-as-markdown">Markdown</button>
+                <button id="copy-as-plaintext">Plaintext</button>
+                <button id="copy-as-html">HTML</button>
+              </div>
+            </div>
             <button id="generate-reply" class="ms-Button">
               <span class="ms-Button-label">Generate Reply</span>
             </button>
@@ -207,13 +238,13 @@
       <!-- Footer -->
       <footer class="app-footer">
         <p>
-          Built with <span class="heart">❤️</span> by Alan Synn
+          Sidekick
           <span id="footer-dev-badge" class="dev-badge" style="display: none">DEV</span>
         </p>
       </footer>
     </main>
 
-    <!-- New Settings View -->
+    <!-- Settings View -->
     <div id="settings-view" class="settings-view" style="display: none">
       <div class="settings-header">
         <h2>Settings</h2>
@@ -227,20 +258,20 @@
         <button class="settings-tab-button" data-tab="tab-developer">Developer</button>
       </div>
       <div class="settings-content">
-        <!-- General Tab Content -->
+        <!-- General Tab -->
         <div id="tab-general" class="settings-tab-content active">
           <div class="settings-group">
-            <label>Z.AI Authentication:</label>
+            <label>OpenRouter API Key:</label>
             <input
               type="password"
               id="dropdown-api-key"
               class="ms-TextField-field"
               placeholder="Enter API key"
             />
-            <p id="dropdown-auth-status">Authentication source: ZAI_API_KEY not checked yet.</p>
+            <p id="dropdown-auth-status"></p>
             <span class="settings-help-text"
-              >Saved in Outlook add-in settings. Coding Plan requests target
-              <code>https://api.z.ai/api/coding/paas/v4</code>.</span
+              >Saved in Outlook add-in settings. Get your key at
+              <code>openrouter.ai/keys</code>.</span
             >
           </div>
           <div class="settings-group">
@@ -262,35 +293,13 @@
                 Refresh models
               </button>
             </div>
-            <span id="model-catalog-meta" class="settings-help-text"
+            <span class="settings-help-text"
               >Auto-refreshes on load and whenever the settings view opens.</span
             >
           </div>
           <div class="settings-group">
-            <label for="dropdown-language">Default Language:</label>
-            <select id="dropdown-language" class="ms-Dropdown-select">
-              <option value="ko">Korean</option>
-              <option value="en">English</option>
-              <option value="ja">Japanese</option>
-              <option value="zh_cn">Chinese</option>
-              <option value="es">Spanish</option>
-              <option value="fr">French</option>
-              <option value="de">German</option>
-              <option value="it">Italian</option>
-            </select>
-          </div>
-          <div class="settings-group">
-            <label for="dropdown-event-title-language">Event Title Language:</label>
-            <select id="dropdown-event-title-language" class="ms-Dropdown-select">
-              <option value="en">English</option>
-              <option value="ko">Korean</option>
-              <option value="ja">Japanese</option>
-              <option value="zh_cn">Chinese</option>
-              <option value="es">Spanish</option>
-              <option value="fr">French</option>
-              <option value="de">German</option>
-              <option value="it">Italian</option>
-            </select>
+            <label for="dropdown-reply-model">Reply Model:</label>
+            <select id="dropdown-reply-model" class="ms-Dropdown-select"></select>
           </div>
           <div class="settings-group">
             <label for="dropdown-theme">Theme:</label>
@@ -323,13 +332,6 @@
             </select>
           </div>
           <div class="settings-group">
-            <label for="dropdown-reply-model">Reply Model:</label>
-            <select id="dropdown-reply-model" class="ms-Dropdown-select"></select>
-            <span class="settings-help-text"
-              >Shares the same Z.AI catalog as the primary model selector.</span
-            >
-          </div>
-          <div class="settings-group">
             <label for="dropdown-autorun">Auto-Run:</label>
             <select id="dropdown-autorun" class="ms-Dropdown-select">
               <option value="false">Disabled</option>
@@ -340,13 +342,12 @@
             <label for="dropdown-autorun-option">Auto-Run Option:</label>
             <select id="dropdown-autorun-option" class="ms-Dropdown-select">
               <option value="summarize">Summarize</option>
-              <option value="translate">Translate</option>
-              <option value="translateAndSummarize">Translate & Summarize</option>
               <option value="reply">Generate Reply</option>
             </select>
           </div>
         </div>
-        <!-- Templates Tab Content -->
+
+        <!-- Templates Tab -->
         <div id="tab-templates" class="settings-tab-content">
           <div class="settings-group">
             <label for="dropdown-summarize-template">Summarize Template:</label>
@@ -357,34 +358,8 @@
             ></textarea>
           </div>
           <div class="settings-group">
-            <label for="dropdown-translate-template">Translate Template:</label>
-            <textarea
-              id="dropdown-translate-template"
-              class="ms-TextField-field"
-              rows="5"
-            ></textarea>
-          </div>
-          <div class="settings-group">
-            <label for="dropdown-translate-summarize-template"
-              >Translate & Summarize Template:</label
-            >
-            <textarea
-              id="dropdown-translate-summarize-template"
-              class="ms-TextField-field"
-              rows="5"
-            ></textarea>
-          </div>
-          <div class="settings-group">
             <label for="dropdown-reply-template">Reply Template:</label>
             <textarea id="dropdown-reply-template" class="ms-TextField-field" rows="5"></textarea>
-          </div>
-          <div class="settings-group">
-            <label for="dropdown-command-translate-template">Quick Translate Command Template:</label>
-            <textarea
-              id="dropdown-command-translate-template"
-              class="ms-TextField-field"
-              rows="5"
-            ></textarea>
           </div>
           <div class="settings-group">
             <label for="dropdown-tldr-template">TL;DR Template:</label>
@@ -417,7 +392,8 @@
             <button id="dropdown-export-markdown" class="ms-Button">Export All</button>
           </div>
         </div>
-        <!-- Developer Tab Content -->
+
+        <!-- Developer Tab -->
         <div id="tab-developer" class="settings-tab-content">
           <div class="settings-group">
             <label for="dropdown-dev-mode">Dev Mode:</label>
@@ -445,9 +421,8 @@
       </div>
     </div>
 
-    <!-- marked.js (CDN) for markdown rendering -->
+    <!-- marked.js for markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Add taskpane.js include -->
     <script type="text/javascript" src="taskpane.js"></script>
   </body>
 </html>

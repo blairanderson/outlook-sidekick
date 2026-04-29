@@ -5,21 +5,10 @@
 
 /* global Office, console, require */
 
-const { ZAI_DEFAULT_MODEL } = require("../shared/zaiConfig");
-const { executeZaiChatCompletion } = require("../shared/zaiClient");
+const { DEFAULT_MODEL } = require("../shared/zaiConfig");
+const { executeChatCompletion } = require("../shared/zaiClient");
 
 const SETTINGS_KEY = "michael_settings";
-const COMMAND_TRANSLATE_TEMPLATE_FALLBACK = `
-Translate the email below into {language}.
-
-Requirements:
-- Return only the translated email body.
-- Preserve meaning, tone, names, dates, numbers, and paragraph structure.
-- Do not add a summary, bullets, or commentary.
-
-Subject: {subject}
-Content:
-{content}`;
 
 Office.onReady(() => {
   // Office is ready
@@ -27,41 +16,33 @@ Office.onReady(() => {
 
 /**
  * Handles the Add-in Command button click.
- * Translates the entire email body using the saved Outlook settings and inserts it at the cursor.
+ * Summarizes the current email body and inserts the result at the cursor.
  * @param {Office.AddinCommands.Event} event The event object.
  */
 async function action(event) {
   const settings = getSavedSettings();
   const apiKey = getSavedApiKey(settings);
   if (!apiKey) {
-    showErrorNotification("Open Michael Settings and save a Z.AI API key first.", event);
+    showErrorNotification("Open Sidekick Settings and save an OpenRouter API key first.", event);
     return;
   }
 
   const model = getSavedModel(settings);
-  const template = getSavedCommandTranslateTemplate(settings);
-  const targetLanguage = getLanguageText(settings.defaultLanguage);
 
-  showProcessingNotification(`Translating email body to ${targetLanguage}...`, event);
+  showProcessingNotification("Summarizing email...", event);
 
   try {
     const emailContent = await getEmailContent();
     const subject = Office.context.mailbox.item.subject;
-    const prompt = template
-      .replace("{subject}", subject)
-      .replace("{content}", emailContent)
-      .replace("{language}", targetLanguage);
-    const translatedBody = await generateContent(prompt, model, apiKey);
+    const prompt = `Summarize the following email briefly.\n\nSubject: ${subject}\nContent:\n${emailContent}`;
+    const summary = await generateContent(prompt, model, apiKey);
 
-    await replaceSelectionWithText(translatedBody);
+    await replaceSelectionWithText(summary);
 
-    showSuccessNotification(
-      `Email body translated to ${targetLanguage} and inserted at the cursor.`,
-      event
-    );
+    showSuccessNotification("Summary inserted at cursor.", event);
   } catch (error) {
-    console.error("Error during translation command:", error);
-    showErrorNotification(`Translation failed: ${error.message}`, event);
+    console.error("Error during summarize command:", error);
+    showErrorNotification(`Summarize failed: ${error.message}`, event);
   }
 }
 
@@ -75,7 +56,7 @@ async function replaceSelectionWithText(textToInsert) {
       (asyncResult) => {
         if (asyncResult.status === Office.AsyncResultStatus.Failed) {
           console.error("Failed to set selected data:", asyncResult.error);
-          reject(new Error(`Failed to insert/replace text: ${asyncResult.error.message}`));
+          reject(new Error(`Failed to insert text: ${asyncResult.error.message}`));
           return;
         }
 
@@ -100,7 +81,7 @@ async function getEmailContent() {
 }
 
 async function generateContent(prompt, modelName, apiKey) {
-  const result = await executeZaiChatCompletion({
+  const result = await executeChatCompletion({
     apiKey,
     userPrompt: prompt,
     model: modelName,
@@ -131,41 +112,7 @@ function getSavedApiKey(settings) {
 
 function getSavedModel(settings) {
   const configuredModel = typeof settings?.model === "string" ? settings.model.trim() : "";
-  return configuredModel || ZAI_DEFAULT_MODEL;
-}
-
-function getSavedCommandTranslateTemplate(settings) {
-  const configuredTemplate =
-    typeof settings?.templates?.commandTranslate === "string"
-      ? settings.templates.commandTranslate.trim()
-      : "";
-
-  if (!configuredTemplate) {
-    return COMMAND_TRANSLATE_TEMPLATE_FALLBACK.trim();
-  }
-
-  return configuredTemplate;
-}
-
-function getLanguageText(languageCode) {
-  switch (languageCode) {
-    case "es":
-      return "Spanish";
-    case "fr":
-      return "French";
-    case "de":
-      return "German";
-    case "it":
-      return "Italian";
-    case "ja":
-      return "Japanese";
-    case "ko":
-      return "Korean";
-    case "zh_cn":
-      return "Chinese";
-    default:
-      return "English";
-  }
+  return configuredModel || DEFAULT_MODEL;
 }
 
 function showProcessingNotification(message) {

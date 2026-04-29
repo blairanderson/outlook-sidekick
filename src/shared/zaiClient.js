@@ -1,8 +1,8 @@
 /* global fetch, module, require */
 
-const { ZAI_CHAT_COMPLETIONS_URL, ZAI_DEFAULT_MODEL, requireZaiApiKey } = require("./zaiConfig");
+const { CHAT_COMPLETIONS_URL, DEFAULT_MODEL, requireApiKey } = require("./zaiConfig");
 
-function buildZaiChatMessages(systemPrompt, userPrompt) {
+function buildChatMessages(systemPrompt, userPrompt) {
   const messages = [];
 
   if (systemPrompt) {
@@ -14,19 +14,19 @@ function buildZaiChatMessages(systemPrompt, userPrompt) {
   return messages;
 }
 
-function buildZaiChatCompletionRequest({
+function buildChatCompletionRequest({
   systemPrompt = "",
   userPrompt,
-  model = ZAI_DEFAULT_MODEL,
+  model = DEFAULT_MODEL,
   temperature = 0.3,
 }) {
   if (!userPrompt || !userPrompt.trim()) {
-    throw new Error("Z.AI requests require a non-empty user prompt.");
+    throw new Error("Requests require a non-empty user prompt.");
   }
 
   return {
     model,
-    messages: buildZaiChatMessages(systemPrompt, userPrompt.trim()),
+    messages: buildChatMessages(systemPrompt, userPrompt.trim()),
     temperature,
     stream: false,
   };
@@ -42,32 +42,33 @@ async function parseJsonResponse(response) {
   try {
     return JSON.parse(body);
   } catch {
-    throw new Error(`Z.AI returned a non-JSON response (${response.status}).`);
+    throw new Error(`Non-JSON response received (${response.status}).`);
   }
 }
 
-function extractZaiMessageText(data) {
+function extractMessageText(data) {
   const content = data?.choices?.[0]?.message?.content;
 
   if (typeof content !== "string" || !content.trim()) {
-    throw new Error("Z.AI returned no message content.");
+    throw new Error("No message content returned.");
   }
 
   return content.trim();
 }
 
-async function executeZaiChatCompletion(request) {
+async function executeChatCompletion(request) {
   const apiKey =
     typeof request?.apiKey === "string" && request.apiKey.trim()
       ? request.apiKey.trim()
-      : requireZaiApiKey();
-  const payload = buildZaiChatCompletionRequest(request);
-  const response = await fetch(ZAI_CHAT_COMPLETIONS_URL, {
+      : requireApiKey();
+  const payload = buildChatCompletionRequest(request);
+  const response = await fetch(CHAT_COMPLETIONS_URL, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
-      "Accept-Language": "en-US,en",
+      "HTTP-Referer": "https://github.com/AlanSynn/michael",
+      "X-Title": "Sidekick for Outlook",
     },
     body: JSON.stringify(payload),
   });
@@ -75,16 +76,16 @@ async function executeZaiChatCompletion(request) {
   const errorMessage = data?.error?.message || data?.message;
 
   if (!response.ok || errorMessage) {
-    throw new Error(errorMessage || `Z.AI request failed (${response.status}).`);
+    throw new Error(errorMessage || `Request failed (${response.status}).`);
   }
 
   return {
-    text: extractZaiMessageText(data),
+    text: extractMessageText(data),
     data,
   };
 }
 
 module.exports = {
-  buildZaiChatCompletionRequest,
-  executeZaiChatCompletion,
+  buildChatCompletionRequest,
+  executeChatCompletion,
 };

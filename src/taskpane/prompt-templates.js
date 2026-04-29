@@ -1,15 +1,12 @@
 /**
- * Z.AI GLM Coding Plan defaults for Michael taskpane integration.
- * Import these constants from taskpane.js when the provider migration is wired.
+ * OpenRouter defaults for Sidekick taskpane integration.
  */
 
 /**
- * @typedef {Object} ZaiProviderConfig
+ * @typedef {Object} ProviderConfig
  * @property {string} providerName
- * @property {string} planName
  * @property {string} apiKeyEnvVar
- * @property {string} codingBaseUrl
- * @property {string} generalBaseUrl
+ * @property {string} baseUrl
  * @property {string} defaultModel
  * @property {string} replyModel
  * @property {readonly string[]} modelSuggestions
@@ -18,10 +15,7 @@
 /**
  * @typedef {Object} PromptTemplates
  * @property {string} summarize
- * @property {string} translate
- * @property {string} translateSummarize
  * @property {string} reply
- * @property {string} commandTranslate
  * @property {string} tldrPrompt
  * @property {string} calendarParse
  * @property {string} calendarCheck
@@ -31,8 +25,6 @@
  * @typedef {Object} SettingsDefaults
  * @property {string} model
  * @property {string} replyModel
- * @property {string} defaultLanguage
- * @property {string} eventTitleLanguage
  * @property {string} theme
  * @property {string} fontSize
  * @property {string} tldrMode
@@ -46,40 +38,39 @@
 /** @type {readonly string[]} */
 export const TEMPLATE_KEYS = Object.freeze([
   "summarize",
-  "translate",
-  "translateSummarize",
   "reply",
-  "commandTranslate",
   "tldrPrompt",
   "calendarParse",
   "calendarCheck",
 ]);
 
-/** @type {ZaiProviderConfig} */
-export const ZAI_PROVIDER_CONFIG = Object.freeze({
-  providerName: "Z.AI",
-  planName: "GLM Coding Plan",
-  apiKeyEnvVar: "ZAI_API_KEY",
-  codingBaseUrl: "https://api.z.ai/api/coding/paas/v4",
-  generalBaseUrl: "https://api.z.ai/api/paas/v4",
-  defaultModel: "glm-4.5-air",
-  replyModel: "glm-4.5-air",
-  modelSuggestions: Object.freeze(["glm-4.5-air", "glm-4.5-flash", "glm-4.7"]),
+/** @type {ProviderConfig} */
+export const PROVIDER_CONFIG = Object.freeze({
+  providerName: "OpenRouter",
+  apiKeyEnvVar: "OPENROUTER_API_KEY",
+  baseUrl: "https://openrouter.ai/api/v1",
+  defaultModel: "anthropic/claude-3.5-haiku",
+  replyModel: "anthropic/claude-3.5-haiku",
+  modelSuggestions: Object.freeze([
+    "anthropic/claude-3.5-haiku",
+    "anthropic/claude-3.5-sonnet",
+    "openai/gpt-4o-mini",
+  ]),
 });
 
 export const PROVIDER_MESSAGES = Object.freeze({
-  apiKeyLabel: "Z.AI API Key",
-  modelLabel: "GLM Model",
-  missingApiKey: "Please enter your Z.AI API key in Settings > General and save it.",
-  exportTitle: "Michael Prompt Templates (Z.AI GLM Coding Plan)",
-  templatesReset: "Templates reset to Z.AI defaults",
+  apiKeyLabel: "OpenRouter API Key",
+  modelLabel: "Model",
+  missingApiKey: "Please enter your OpenRouter API key in Settings > General and save it.",
+  exportTitle: "Sidekick Prompt Templates",
+  templatesReset: "Templates reset to defaults",
   templatesCleared: "Prompt templates cleared from Outlook add-in settings.",
   sessionDefaultsSaved: "Current prompt templates saved as Outlook defaults.",
 });
 
 /** @type {PromptTemplates} */
 export const DEFAULT_PROMPT_TEMPLATES = Object.freeze({
-  summarize: `You are Michael, an Outlook email assistant powered by Z.AI GLM models.
+  summarize: `You are Sidekick, an Outlook email assistant.
 
 Review the email below and respond in Markdown with these sections only:
 1. TL;DR — 1-3 bullet points with the most important takeaways.
@@ -92,36 +83,9 @@ Keep the answer factual, compact, and grounded in the email. If the email does n
 Subject: {subject}
 Content:
 {content}`,
-  translate: `You are Michael, an Outlook email assistant powered by Z.AI GLM models.
+  reply: `You are Sidekick, an Outlook email assistant.
 
-Translate the email below into {language}. Preserve meaning, tone, names, dates, numbers, and formatting.
-
-Return Markdown with these sections only:
-1. TL;DR — a very short summary in {language}.
-2. Translation — the full translated email.
-
-Do not add commentary outside the requested sections.
-
-Subject: {subject}
-Content:
-{content}`,
-  translateSummarize: `You are Michael, an Outlook email assistant powered by Z.AI GLM models.
-
-Translate the email below into {language} and summarize it.
-
-Return Markdown with these sections only:
-1. TL;DR — a very short summary in {language}.
-2. Summary — the key points in {language}.
-3. Translation — the full translated email in {language}.
-
-Preserve meaning, tone, names, dates, numbers, and formatting. Do not add commentary outside the requested sections.
-
-Subject: {subject}
-Content:
-{content}`,
-  reply: `You are Michael, an Outlook email assistant powered by Z.AI GLM models.
-
-Draft a clear, professional reply in {language} to the email below.
+Draft a clear, professional reply to the email below.
 
 Output format:
 Subject: <reply subject>
@@ -137,19 +101,7 @@ Requirements:
 Subject: {subject}
 Content:
 {content}`,
-  commandTranslate: `You are Michael, an Outlook email assistant powered by Z.AI GLM models.
-
-Translate the email below into {language}.
-
-Requirements:
-- Return only the translated email body.
-- Preserve meaning, tone, names, dates, numbers, and paragraph structure.
-- Do not add a summary, title, bullets, or commentary.
-
-Subject: {subject}
-Content:
-{content}`,
-  tldrPrompt: `Provide a very concise TL;DR in {language} for the email below.
+  tldrPrompt: `Provide a very concise TL;DR for the email below.
 
 Rules:
 - Focus on the main point, key actions, and deadlines.
@@ -175,11 +127,11 @@ Required JSON format:
   },
   "start": {
     "dateTime": "YYYY-MM-DDTHH:mm:ss",
-    "timeZone": "Asia/Seoul"
+    "timeZone": "America/New_York"
   },
   "end": {
     "dateTime": "YYYY-MM-DDTHH:mm:ss",
-    "timeZone": "Asia/Seoul"
+    "timeZone": "America/New_York"
   },
   "location": {
     "displayName": "Location name"
@@ -200,7 +152,7 @@ Required JSON format:
 Important notes:
 1. Convert dates and times to ISO 8601 format (YYYY-MM-DDTHH:mm:ss)
 2. Email addresses must be valid
-3. Use "Asia/Seoul" as the default timezone
+3. Use "America/New_York" as the default timezone
 4. Set isOnlineMeeting to true if Teams or video conference details are present
 5. Mark unknown values as null
 
@@ -225,8 +177,6 @@ Email content:
 export const DEFAULT_SETTINGS = Object.freeze({
   model: "",
   replyModel: "",
-  defaultLanguage: "ko",
-  eventTitleLanguage: "en",
   theme: "system",
   fontSize: "medium",
   tldrMode: "true",
@@ -239,10 +189,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
 
 export const BLANK_PROMPT_TEMPLATES = Object.freeze({
   summarize: "",
-  translate: "",
-  translateSummarize: "",
   reply: "",
-  commandTranslate: "",
   tldrPrompt: "",
   calendarParse: "",
   calendarCheck: "",
@@ -254,10 +201,7 @@ export const BLANK_PROMPT_TEMPLATES = Object.freeze({
 export function createDefaultPromptTemplates() {
   return {
     summarize: DEFAULT_PROMPT_TEMPLATES.summarize,
-    translate: DEFAULT_PROMPT_TEMPLATES.translate,
-    translateSummarize: DEFAULT_PROMPT_TEMPLATES.translateSummarize,
     reply: DEFAULT_PROMPT_TEMPLATES.reply,
-    commandTranslate: DEFAULT_PROMPT_TEMPLATES.commandTranslate,
     tldrPrompt: DEFAULT_PROMPT_TEMPLATES.tldrPrompt,
     calendarParse: DEFAULT_PROMPT_TEMPLATES.calendarParse,
     calendarCheck: DEFAULT_PROMPT_TEMPLATES.calendarCheck,
@@ -267,10 +211,7 @@ export function createDefaultPromptTemplates() {
 export function createBlankPromptTemplates() {
   return {
     summarize: BLANK_PROMPT_TEMPLATES.summarize,
-    translate: BLANK_PROMPT_TEMPLATES.translate,
-    translateSummarize: BLANK_PROMPT_TEMPLATES.translateSummarize,
     reply: BLANK_PROMPT_TEMPLATES.reply,
-    commandTranslate: BLANK_PROMPT_TEMPLATES.commandTranslate,
     tldrPrompt: BLANK_PROMPT_TEMPLATES.tldrPrompt,
     calendarParse: BLANK_PROMPT_TEMPLATES.calendarParse,
     calendarCheck: BLANK_PROMPT_TEMPLATES.calendarCheck,

@@ -1,27 +1,27 @@
-/* global __ZAI_API_KEY__, module */
+/* global __API_KEY__, module */
 
-const ZAI_CODING_BASE_URL = "https://api.z.ai/api/coding/paas/v4";
-const ZAI_CHAT_COMPLETIONS_URL = `${ZAI_CODING_BASE_URL}/chat/completions`;
-const ZAI_DEFAULT_MODEL = "glm-4.5-air";
+const BASE_URL = "https://openrouter.ai/api/v1";
+const CHAT_COMPLETIONS_URL = `${BASE_URL}/chat/completions`;
+const DEFAULT_MODEL = "anthropic/claude-3.5-haiku";
 
-function getZaiApiKey() {
-  if (typeof __ZAI_API_KEY__ !== "string") {
+function getApiKey() {
+  if (typeof __API_KEY__ !== "string") {
     return "";
   }
 
-  return __ZAI_API_KEY__.trim();
+  return __API_KEY__.trim();
 }
 
-function hasZaiApiKeyConfigured() {
-  return getZaiApiKey().length > 0;
+function hasApiKeyConfigured() {
+  return getApiKey().length > 0;
 }
 
-function requireZaiApiKey() {
-  const apiKey = getZaiApiKey();
+function requireApiKey() {
+  const apiKey = getApiKey();
 
   if (!apiKey) {
     throw new Error(
-      "Missing ZAI_API_KEY. Set the environment variable before starting the add-in."
+      "Missing OPENROUTER_API_KEY. Set the environment variable before starting the add-in."
     );
   }
 
@@ -29,10 +29,10 @@ function requireZaiApiKey() {
 }
 
 module.exports = {
-  ZAI_CODING_BASE_URL,
-  ZAI_CHAT_COMPLETIONS_URL,
-  ZAI_DEFAULT_MODEL,
-  getZaiApiKey,
-  hasZaiApiKeyConfigured,
-  requireZaiApiKey,
+  BASE_URL,
+  CHAT_COMPLETIONS_URL,
+  DEFAULT_MODEL,
+  getApiKey,
+  hasApiKeyConfigured,
+  requireApiKey,
 };

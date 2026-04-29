@@ -9,8 +9,8 @@ const webpack = require("webpack");
 const urlDev = "https://localhost:3000/";
 const urlProd = "https://alansynn.com/michael/";
 
-const addinName = "Michael";
-const addinDevName = "Michael [Local]";
+const addinName = "Sidekick";
+const addinDevName = "Sidekick [Local]";
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -62,9 +62,9 @@ module.exports = async (env, options) => {
     },
     plugins: [
       new webpack.DefinePlugin({
-        __ZAI_API_KEY__: JSON.stringify(process.env.ZAI_API_KEY || ""),
-        __ZAI_CODING_BASE_URL__: JSON.stringify(
-          process.env.ZAI_CODING_BASE_URL || "https://api.z.ai/api/coding/paas/v4"
+        __API_KEY__: JSON.stringify(process.env.OPENROUTER_API_KEY || ""),
+        __BASE_URL__: JSON.stringify(
+          process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1"
         ),
       }),
       new HtmlWebpackPlugin({
@@ -117,7 +117,7 @@ module.exports = async (env, options) => {
         ],
       }),
       new webpack.DefinePlugin({
-        __ZAI_API_KEY__: JSON.stringify(process.env.ZAI_API_KEY || ""),
+        __API_KEY__: JSON.stringify(process.env.OPENROUTER_API_KEY || ""),
       }),
     ],
     devServer: {

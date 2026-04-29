@@ -1,24 +1,20 @@
-/* global __ZAI_API_KEY__, __ZAI_CODING_BASE_URL__, AbortController, clearTimeout, fetch, setTimeout */
+/* global __API_KEY__, __BASE_URL__, AbortController, clearTimeout, fetch, setTimeout */
 
-const DEFAULT_ZAI_BASE_URL = "https://api.z.ai/api/coding/paas/v4";
-const DEFAULT_ZAI_MODEL = "glm-4.5-air";
-const DEFAULT_ZAI_REPLY_MODEL = "glm-4.5-air";
+const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
+const DEFAULT_MODEL = "anthropic/claude-3.5-haiku";
+const DEFAULT_REPLY_MODEL = "anthropic/claude-3.5-haiku";
 const MODEL_DISCOVERY_TIMEOUT_MS = 5000;
 const CHAT_COMPLETION_TIMEOUT_MS = 120000;
-const FALLBACK_ZAI_MODELS = Object.freeze([
-  "glm-4.5-air",
-  "glm-4.5-flash",
-  "glm-4.7",
-  "glm-5.1",
-  "glm-5-turbo",
-  "glm-5",
-  "glm-4.7-flash",
-  "glm-4.7-flashx",
-  "glm-4.6",
-  "glm-4.5",
-  "glm-4.5-x",
-  "glm-4.5-airx",
-  "glm-4-32b-0414-128k",
+const FALLBACK_MODELS = Object.freeze([
+  "anthropic/claude-3.5-haiku",
+  "anthropic/claude-3.5-sonnet",
+  "anthropic/claude-3-opus",
+  "openai/gpt-4o-mini",
+  "openai/gpt-4o",
+  "google/gemini-2.0-flash-001",
+  "google/gemini-1.5-pro",
+  "meta-llama/llama-3.3-70b-instruct",
+  "mistralai/mistral-7b-instruct",
 ]);
 
 function normalizeModelName(value) {
@@ -63,33 +59,33 @@ function normalizeTextContent(content) {
   return "";
 }
 
-function getZaiBaseUrl() {
+function getBaseUrl() {
   const configuredBaseUrl =
-    typeof __ZAI_CODING_BASE_URL__ === "string" && __ZAI_CODING_BASE_URL__.trim()
-      ? __ZAI_CODING_BASE_URL__.trim()
-      : DEFAULT_ZAI_BASE_URL;
+    typeof __BASE_URL__ === "string" && __BASE_URL__.trim()
+      ? __BASE_URL__.trim()
+      : DEFAULT_BASE_URL;
 
   return configuredBaseUrl.replace(/\/+$/, "");
 }
 
-function getZaiApiKey() {
-  return typeof __ZAI_API_KEY__ === "string" ? __ZAI_API_KEY__.trim() : "";
+function getApiKey() {
+  return typeof __API_KEY__ === "string" ? __API_KEY__.trim() : "";
 }
 
-function hasZaiApiKey() {
-  return Boolean(getZaiApiKey());
+function hasApiKey() {
+  return Boolean(getApiKey());
 }
 
-function getDefaultZaiModels() {
-  return [...FALLBACK_ZAI_MODELS];
+function getDefaultModels() {
+  return [...FALLBACK_MODELS];
 }
 
-function getDefaultZaiModel() {
-  return DEFAULT_ZAI_MODEL;
+function getDefaultModel() {
+  return DEFAULT_MODEL;
 }
 
-function getDefaultZaiReplyModel() {
-  return DEFAULT_ZAI_REPLY_MODEL;
+function getDefaultReplyModel() {
+  return DEFAULT_REPLY_MODEL;
 }
 
 function createTimeoutSignal(timeoutMs) {
@@ -105,45 +101,15 @@ function createTimeoutSignal(timeoutMs) {
 }
 
 function extractModelNames(payload) {
-  const discovered = [];
-
-  function visit(value) {
-    if (!value) {
-      return;
-    }
-
-    if (Array.isArray(value)) {
-      value.forEach(visit);
-      return;
-    }
-
-    if (typeof value === "string") {
-      const normalized = normalizeModelName(value);
-      if (normalized.startsWith("glm-")) {
-        discovered.push(normalized);
-      }
-      return;
-    }
-
-    if (typeof value !== "object") {
-      return;
-    }
-
-    ["id", "model", "name"].forEach((field) => {
-      if (typeof value[field] === "string") {
-        const normalized = normalizeModelName(value[field]);
-        if (normalized.startsWith("glm-")) {
-          discovered.push(normalized);
-        }
-      }
-    });
-
-    Object.values(value).forEach(visit);
+  // OpenRouter returns { data: [{ id: "anthropic/claude-3.5-haiku", ... }] }
+  if (Array.isArray(payload?.data)) {
+    const discovered = payload.data
+      .map((item) => (typeof item?.id === "string" ? item.id.trim() : ""))
+      .filter(Boolean);
+    return dedupeModels(discovered);
   }
 
-  visit(payload);
-
-  return dedupeModels(discovered);
+  return [];
 }
 
 async function fetchJson(url, options = {}, timeoutMs = MODEL_DISCOVERY_TIMEOUT_MS) {
@@ -170,20 +136,22 @@ async function fetchJson(url, options = {}, timeoutMs = MODEL_DISCOVERY_TIMEOUT_
 }
 
 async function generateText(prompt, options = {}) {
-  const apiKey = options.apiKey || getZaiApiKey();
-  const model = normalizeModelName(options.model) || DEFAULT_ZAI_MODEL;
+  const apiKey = options.apiKey || getApiKey();
+  const model = normalizeModelName(options.model) || DEFAULT_MODEL;
 
   if (!apiKey) {
-    throw new Error("ZAI_API_KEY is not configured.");
+    throw new Error("API key is not configured.");
   }
 
   const payload = await fetchJson(
-    `${getZaiBaseUrl()}/chat/completions`,
+    `${getBaseUrl()}/chat/completions`,
     {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        "HTTP-Referer": "https://github.com/AlanSynn/michael",
+        "X-Title": "Sidekick for Outlook",
       },
       body: JSON.stringify({
         model,
@@ -193,9 +161,6 @@ async function generateText(prompt, options = {}) {
             content: prompt,
           },
         ],
-        thinking: {
-          type: "disabled",
-        },
         temperature: options.temperature ?? 0.4,
         max_tokens: options.maxTokens ?? 4096,
         stream: false,
@@ -213,18 +178,20 @@ async function generateText(prompt, options = {}) {
 }
 
 async function fetchAvailableModels(options = {}) {
-  const apiKey = options.apiKey || getZaiApiKey();
+  const apiKey = options.apiKey || getApiKey();
   if (!apiKey) {
-    throw new Error("ZAI_API_KEY is not configured.");
+    throw new Error("API key is not configured.");
   }
 
   const payload = await fetchJson(
-    `${getZaiBaseUrl()}/models`,
+    `${getBaseUrl()}/models`,
     {
       method: "GET",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        "HTTP-Referer": "https://github.com/AlanSynn/michael",
+        "X-Title": "Sidekick for Outlook",
       },
     },
     options.timeoutMs
@@ -239,13 +206,13 @@ async function fetchAvailableModels(options = {}) {
 }
 
 export {
-  FALLBACK_ZAI_MODELS,
+  FALLBACK_MODELS,
   fetchAvailableModels,
   generateText,
-  getDefaultZaiModel,
-  getDefaultZaiModels,
-  getDefaultZaiReplyModel,
-  getZaiApiKey,
-  getZaiBaseUrl,
-  hasZaiApiKey,
+  getDefaultModel,
+  getDefaultModels,
+  getDefaultReplyModel,
+  getApiKey,
+  getBaseUrl,
+  hasApiKey,
 };

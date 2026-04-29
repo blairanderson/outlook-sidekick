@@ -9,10 +9,10 @@
   <!-- Basic settings -->
   <Id>9549e1d3-1ddc-4383-8b3a-d71952f8453a</Id>
   <Version>1.1.0.0</Version>
-  <ProviderName>Michael [Local]</ProviderName>
+  <ProviderName>Sidekick [Local]</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Michael [Local]"/>
-  <Description DefaultValue="Meet, Michael. Your AI sidekick for summarizing and translating emails with Z.AI GLM Coding Plan."/>
+  <DisplayName DefaultValue="Sidekick [Local]"/>
+  <Description DefaultValue="Sidekick — AI email assistant powered by OpenRouter. Summarize, reply, and create calendar events directly in Outlook."/>
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-black.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/michael-black.png"/>
   <SupportUrl DefaultValue="https://github.com/AlanSynn/Michael"/>
@@ -21,7 +21,7 @@
   <AppDomains>
     <AppDomain>https://localhost:3000</AppDomain>
     <AppDomain>https://alansynn.com</AppDomain>
-    <AppDomain>https://api.z.ai</AppDomain>
+    <AppDomain>https://openrouter.ai</AppDomain>
   </AppDomains>
 
   <Hosts>
@@ -102,11 +102,11 @@
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="GroupLabel" DefaultValue="Michael [Local]"/>
+        <bt:String id="GroupLabel" DefaultValue="Sidekick [Local]"/>
         <bt:String id="TaskpaneButton.Label" DefaultValue="Pane"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Opens a pane to summarize or translate the email."/>
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Opens Sidekick to summarize emails and draft replies."/>
       </bt:LongStrings>
     </Resources>
 
@@ -163,11 +163,11 @@
           <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
         </bt:Urls>
         <bt:ShortStrings>
-          <bt:String id="GroupLabel" DefaultValue="Michael [Local]"/>
+          <bt:String id="GroupLabel" DefaultValue="Sidekick [Local]"/>
           <bt:String id="TaskpaneButton.Label" DefaultValue="Pane"/>
         </bt:ShortStrings>
         <bt:LongStrings>
-          <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Opens a pane to talk with Michael."/>
+          <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Opens Sidekick to summarize emails and draft replies."/>
         </bt:LongStrings>
       </Resources>
     </VersionOverrides>
